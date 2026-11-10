@@ -1,0 +1,8 @@
+ros-jazzy-serial (1.2.1-1) stable; urgency=medium
+
+  * Package the ROS 2 port of wjwwood/serial for ROS 2 Jazzy.
+  * Base on upstream wjwwood/serial main (69e0372).
+  * Build with ament_cmake; install headers, shared library and ament
+    metadata under the configured install prefix (default /opt/roboparty).
+
+ -- wentywenty <2321901849@qq.com>  Sat, 07 Nov 2026 13:45:00 +0800

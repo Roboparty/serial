@@ -1,0 +1,20 @@
+Source: ros-jazzy-serial
+Section: misc
+Priority: optional
+Maintainer: wentywenty <2321901849@qq.com>
+Build-Depends: debhelper-compat (= 13), cmake,
+               python3-colcon-common-extensions,
+               ros-jazzy-ament-cmake
+Standards-Version: 4.6.0
+Homepage: https://github.com/Roboparty/serial
+Vcs-Git: https://github.com/Roboparty/serial.git
+Vcs-Browser: https://github.com/Roboparty/serial
+
+Package: ros-jazzy-serial
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: ROS 2 port of the wjwwood/serial library
+ Cross-platform C++ library for interfacing with RS-232 like serial
+ ports. This is the ROS 2 port used by nlink_parser_ros2, built for
+ ROS 2 Jazzy and installed under the configured install prefix (default
+ /opt/roboparty) for the RoboParty navigation stack.

@@ -1,4 +1,5 @@
 .*
+!.github/
 .DS_Store
 *.coverage
 *.egg-info
@@ -32,3 +33,16 @@ doc/html
 ipch
 Debug
 Release
+
+# Debian packaging build outputs
+log/
+debian/tmp/
+debian/ros-jazzy-serial/
+debian/files
+debian/*.substvars
+debian/debhelper-build-stamp
+debian/.debhelper/
+*.deb
+*.changes
+*.buildinfo
+obj-*/

@@ -1,0 +1,62 @@
+#!/usr/bin/make -f
+
+INSTALL_PREFIX ?= /opt/roboparty
+export DH_VERBOSE = 1
+export DEB_BUILD_MAINT_OPTIONS = optimize=-lto
+ROS_DISTRO ?= jazzy
+ROS_SETUP ?= /opt/ros/$(ROS_DISTRO)
+export ROS_DISTRO
+export ROS_SETUP
+export AMENT_PREFIX_PATH = $(ROS_SETUP)
+export CMAKE_PREFIX_PATH = $(ROS_SETUP):/usr
+export LD_LIBRARY_PATH := $(ROS_SETUP)/lib$(if $(LD_LIBRARY_PATH),:$(LD_LIBRARY_PATH))
+export CCACHE_DISABLE = 1
+
+JOBS := $(shell nproc)
+PKG_NAME = ros-jazzy-serial
+STAGE := $(CURDIR)/build/stage$(INSTALL_PREFIX)
+
+%:
+	dh $@
+
+override_dh_auto_configure:
+	. $(ROS_SETUP)/setup.sh && colcon build \
+		--base-paths . \
+		--packages-select serial \
+		--parallel-workers $(JOBS) \
+		--build-base build/colcon \
+		--install-base "$(STAGE)" \
+		--merge-install \
+		--cmake-args \
+			-DCMAKE_BUILD_TYPE=Release \
+			-DBUILD_TESTING=OFF \
+			-DCMAKE_PREFIX_PATH="$(ROS_SETUP):/usr" \
+			-DCMAKE_LIBRARY_PATH=/usr/lib \
+			-DCMAKE_INCLUDE_PATH=/usr/include
+
+override_dh_auto_build:
+	@true
+
+override_dh_auto_test:
+	@true
+
+override_dh_auto_install:
+	# Copy only the package payload; colcon's root scaffolding would clobber
+	# $(INSTALL_PREFIX)/setup.bash and the shared ament index.
+	install -d debian/$(PKG_NAME)$(INSTALL_PREFIX)/include
+	install -d debian/$(PKG_NAME)$(INSTALL_PREFIX)/lib
+	install -d debian/$(PKG_NAME)$(INSTALL_PREFIX)/share/ament_index
+	cp -a build/stage$(INSTALL_PREFIX)/include/. debian/$(PKG_NAME)$(INSTALL_PREFIX)/include/
+	cp -a build/stage$(INSTALL_PREFIX)/lib/. debian/$(PKG_NAME)$(INSTALL_PREFIX)/lib/
+	cp -a build/stage$(INSTALL_PREFIX)/share/ament_index/. \
+		debian/$(PKG_NAME)$(INSTALL_PREFIX)/share/ament_index/
+	cp -a build/stage$(INSTALL_PREFIX)/share/serial \
+		debian/$(PKG_NAME)$(INSTALL_PREFIX)/share/
+	# Drop the upstream example binary shipped by serial.
+	rm -rf debian/$(PKG_NAME)$(INSTALL_PREFIX)/lib/serial
+
+override_dh_auto_clean:
+	rm -rf build log
+
+override_dh_shlibdeps:
+	dh_shlibdeps -- -l$(CURDIR)/build/stage$(INSTALL_PREFIX)/lib --ignore-missing-info
